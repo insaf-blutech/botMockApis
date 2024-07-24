@@ -31,9 +31,32 @@ class AccountController {
       res.status(404).json({ message: "Account Not Found" });
     }
   }
-  async transactions(req, res) {
+  async transactionsByNumber(req, res) {
     const accountNumber = Number(req.query.accountNumber);
     const numOfTransactions = Number(req.query.numOfTransactions) || 5;
+
+    console.log("REQQQQQ", req.query);
+    const account = await TransactionModel.findOne({
+      session_id: accountNumber,
+    });
+    if (account) {
+      let filteredTransactions = account.transactions;
+
+      const sortedTransactions = filteredTransactions.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+
+      const lastTransactions = sortedTransactions.slice(0, numOfTransactions);
+
+      res
+        .status(200)
+        .json({ message: "Transactions Data Fetched", data: lastTransactions });
+    } else {
+      res.status(404).json({ message: "Transactions Not Found" });
+    }
+  }
+  async transactionsByDate(req, res) {
+    const accountNumber = Number(req.query.accountNumber);
     const { from, to } = req.query;
     console.log("REQQQQQ", req.query);
     const account = await TransactionModel.findOne({
@@ -50,21 +73,15 @@ class AccountController {
 
           return transactionDate >= start && transactionDate <= end;
         });
-      } else {
       }
       const sortedTransactions = filteredTransactions.sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );
 
-      //   const sortedTransactions = filteredTransactions.transactions.sort(
-      //     (a, b) => new Date(b.date) - new Date(a.date)
-      //   );
-
-      const lastTransactions = sortedTransactions.slice(0, numOfTransactions);
-
-      res
-        .status(200)
-        .json({ message: "Transactions Data Fetched", data: lastTransactions });
+      res.status(200).json({
+        message: "Transactions Data Fetched",
+        data: sortedTransactions,
+      });
     } else {
       res.status(404).json({ message: "Transactions Not Found" });
     }

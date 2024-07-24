@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get("/checkBalance", AccountController.checkBalance);
 router.get("/checkRewardPoints", AccountController.checkRewardPoints);
-router.get("/transactions", AccountController.transactions);
+router.get("/transactions/number", AccountController.transactionsByNumber);
+router.get("/transactions/date", AccountController.transactionsByDate);
 
 module.exports = router;
