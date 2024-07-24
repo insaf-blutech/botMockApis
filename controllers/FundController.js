@@ -1,21 +1,22 @@
 const accounts = require("../data/accounts.json");
+const AccountModel = require("../models/accountModel");
 class FundController {
-  checkAccount(req, res) {
+  async checkAccount(req, res) {
     const recieverAccount = Number(req.query.accountNumber);
     console.log("REQQQQQ", recieverAccount);
-    const account = accounts.find((acc) => acc.session_id === recieverAccount);
+    const account = await AccountModel.findOne({ session_id: recieverAccount });
     if (account) {
       res.status(200).json({ message: "Account Data Fetched", data: account });
     } else {
       res.status(404).json({ message: "Account Not Found" });
     }
   }
-  validateSenderBalance(req, res) {
+  async validateSenderBalance(req, res) {
     try {
       const senderAccount = Number(req.query.accountNumber);
       const sendingAmount = Number(req.query.sendingAmount);
       console.log("REQQQQQ", senderAccount, sendingAmount);
-      const account = accounts.find((acc) => acc.session_id === senderAccount);
+      const account = await AccountModel.findOne({ session_id: senderAccount });
       if (account) {
         if (account.balance < sendingAmount) {
           throw new Error("Amount is Insufficient");
@@ -28,24 +29,41 @@ class FundController {
       res.status(400).json({ message: err.message, data: null });
     }
   }
-  verifyTransfer(req, res) {
-    try {
-      const otp = Number(req.body.otp);
-      const senderAccount = Number(req.body.senderAccount);
-      const recieverAccount = Number(req.body.recieverAccount);
-      const sendingAmount = Number(req.body.sendingAmount);
+  async verifyTransfer(req, res) {
+    const otp = Number(req.body.otp);
+    const senderAccount = Number(req.body.senderAccount);
+    const recieverAccount = Number(req.body.recieverAccount);
+    const sendingAmount = Number(req.body.sendingAmount);
 
-      const sender = accounts.find((acc) => acc.session_id === senderAccount);
-      const reciever = accounts.find(
-        (acc) => acc.session_id === recieverAccount
-      );
-      if (sender && reciever) {
+    const session = await AccountModel.startSession();
+    session.startTransaction();
+    try {
+      const sender = await AccountModel.findOne({
+        session_id: senderAccount,
+      }).session(session);
+      const receiver = await AccountModel.findOne({
+        session_id: recieverAccount,
+      }).session(session);
+
+      if (sender && receiver) {
         if (otp === 1234) {
-          sender.balance = sender.balance - sendingAmount;
-          reciever.balance = reciever.balance + sendingAmount;
+          // sender.balance = sender.balance - sendingAmount;
+          // reciever.balance = reciever.balance + sendingAmount;
+
+          sender.balance -= sendingAmount;
+          receiver.balance += sendingAmount;
+
+          parseFloat(sender.balance).toFixed(2);
+          parseFloat(receiver.balance).toFixed(2);
+
+          await sender.save({ session });
+          await receiver.save({ session });
+
+          await session.commitTransaction();
+          session.endSession();
           res.status(200).json({
             message: "Amount Transferred Successfully",
-            data: { sender, reciever },
+            data: { sender, receiver },
           });
         } else {
           throw new Error("Invalid OTP");

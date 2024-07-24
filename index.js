@@ -8,9 +8,12 @@ const balanceRoutes = require("./routes/balanceRoutes");
 const accountRoutes = require("./routes/accountRoutes");
 const generalRoutes = require("./routes/generalRoutes");
 const fundRoutes = require("./routes/fundRoutes");
+const dbConnection = require("./config/db-config");
 
 app.use(express.json());
 app.use(cors());
+
+dbConnection();
 
 app.get("/", (req, res) => {
   console.log("GET REQUEST : ", req.body);
