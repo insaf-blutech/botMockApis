@@ -1,0 +1,77 @@
+[
+    {
+        "branch_id": 1,
+        "branch_name": "Central Branch",
+        "address": "123 Main St, Metropolis, NY",
+        "phone_number": "+1-555-1234",
+        "hours": {
+            "monday": "09:00 - 17:00",
+            "tuesday": "09:00 - 17:00",
+            "wednesday": "09:00 - 17:00",
+            "thursday": "09:00 - 17:00",
+            "friday": "09:00 - 17:00",
+            "saturday": "10:00 - 14:00",
+            "sunday": "Closed"
+        }
+    },
+    {
+        "branch_id": 2,
+        "branch_name": "Westside Branch",
+        "address": "456 Elm St, Gotham, NY",
+        "phone_number": "+1-555-5678",
+        "hours": {
+            "monday": "09:00 - 18:00",
+            "tuesday": "09:00 - 18:00",
+            "wednesday": "09:00 - 18:00",
+            "thursday": "09:00 - 18:00",
+            "friday": "09:00 - 18:00",
+            "saturday": "10:00 - 15:00",
+            "sunday": "Closed"
+        }
+    },
+    {
+        "branch_id": 3,
+        "branch_name": "Downtown Branch",
+        "address": "789 Oak St, Star City, NY",
+        "phone_number": "+1-555-8765",
+        "hours": {
+            "monday": "08:30 - 17:30",
+            "tuesday": "08:30 - 17:30",
+            "wednesday": "08:30 - 17:30",
+            "thursday": "08:30 - 17:30",
+            "friday": "08:30 - 17:30",
+            "saturday": "09:00 - 13:00",
+            "sunday": "Closed"
+        }
+    },
+    {
+        "branch_id": 4,
+        "branch_name": "Northside Branch",
+        "address": "101 Pine St, Central City, NY",
+        "phone_number": "+1-555-3456",
+        "hours": {
+            "monday": "09:00 - 17:00",
+            "tuesday": "09:00 - 17:00",
+            "wednesday": "09:00 - 17:00",
+            "thursday": "09:00 - 17:00",
+            "friday": "09:00 - 17:00",
+            "saturday": "10:00 - 16:00",
+            "sunday": "Closed"
+        }
+    },
+    {
+        "branch_id": 5,
+        "branch_name": "Eastside Branch",
+        "address": "202 Maple St, Riverdale, NY",
+        "phone_number": "+1-555-6543",
+        "hours": {
+            "monday": "09:00 - 18:00",
+            "tuesday": "09:00 - 18:00",
+            "wednesday": "09:00 - 18:00",
+            "thursday": "09:00 - 18:00",
+            "friday": "09:00 - 18:00",
+            "saturday": "10:00 - 14:00",
+            "sunday": "Closed"
+        }
+    }
+]
