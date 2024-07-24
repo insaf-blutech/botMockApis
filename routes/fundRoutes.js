@@ -3,8 +3,8 @@ const FundController = require("../controllers/FundController");
 
 const router = express.Router();
 
-router.post("/transfer/checkAccount", FundController.checkAccount);
-router.post(
+router.get("/transfer/checkAccount", FundController.checkAccount);
+router.get(
   "/transfer/checkSenderBalance",
   FundController.validateSenderBalance
 );

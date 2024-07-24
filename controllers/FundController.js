@@ -2,8 +2,8 @@ const accounts = require("../data/accounts.json");
 class FundController {
   checkAccount(req, res) {
     const recieverAccount = Number(req.query.accountNumber);
-    console.log("REQQQQQ", accountNumber);
-    const account = accounts.find((acc) => acc.session_id === accountNumber);
+    console.log("REQQQQQ", recieverAccount);
+    const account = accounts.find((acc) => acc.session_id === recieverAccount);
     if (account) {
       res.status(200).json({ message: "Account Data Fetched", data: account });
     } else {
@@ -15,7 +15,7 @@ class FundController {
       const senderAccount = Number(req.query.accountNumber);
       const sendingAmount = Number(req.query.sendingAmount);
       console.log("REQQQQQ", senderAccount, sendingAmount);
-      const account = accounts.find((acc) => acc.session_id === accountNumber);
+      const account = accounts.find((acc) => acc.session_id === senderAccount);
       if (account) {
         if (account.balance < sendingAmount) {
           throw new Error("Amount is Insufficient");
