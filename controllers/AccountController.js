@@ -86,5 +86,56 @@ class AccountController {
       res.status(404).json({ message: "Transactions Not Found" });
     }
   }
+  async expenditureSummary(req, res) {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
+    console.log("REQQQQQ", startOfMonth, endOfMonth);
+
+    const accountNumber = Number(req.query.accountNumber);
+    const account = await TransactionModel.findOne({
+      session_id: accountNumber,
+    });
+    let expenses = {};
+    let earnings = {};
+    if (account) {
+      account.transactions.forEach((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        const amount = Number(transaction.amount);
+
+        if (!expenses[transaction.description]) {
+          expenses[transaction.description] = 0;
+        }
+        if (amount < 0) {
+          // Handle expenses (negative amounts)
+          if (!expenses[transaction.description]) {
+            expenses[transaction.description] = 0;
+          }
+          expenses[transaction.description] += amount;
+        } else if (amount > 0) {
+          // Handle earnings (positive amounts)
+          if (!earnings[transaction.description]) {
+            earnings[transaction.description] = 0;
+          }
+          earnings[transaction.description] += amount;
+        }
+        //   transactionDate >= startOfMonth && transactionDate <= endOfMonth
+        // );
+      });
+      res
+        .status(200)
+        .json({ message: "Expenditure Summary", data: { expenses, earnings } });
+    } else {
+      res.status(404).json({ message: "Expenditure Summary Not Found" });
+    }
+  }
 }
 module.exports = new AccountController();

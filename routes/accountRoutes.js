@@ -7,5 +7,6 @@ router.get("/checkBalance", AccountController.checkBalance);
 router.get("/checkRewardPoints", AccountController.checkRewardPoints);
 router.get("/transactions/number", AccountController.transactionsByNumber);
 router.get("/transactions/date", AccountController.transactionsByDate);
+router.get("/expenditure/summary", AccountController.expenditureSummary);
 
 module.exports = router;
