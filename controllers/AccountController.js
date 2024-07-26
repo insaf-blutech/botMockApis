@@ -98,8 +98,8 @@ class AccountController {
       59,
       999
     );
-    console.log("REQQQQQ", startOfMonth, endOfMonth);
-
+    const duration = `${startOfMonth.toLocaleDateString()} to ${endOfMonth.toLocaleDateString()}`;
+    console.log("REQQQQQ", startOfMonth, endOfMonth, "\n", duration);
     const accountNumber = Number(req.query.accountNumber);
     const account = await TransactionModel.findOne({
       session_id: accountNumber,
@@ -110,29 +110,26 @@ class AccountController {
       account.transactions.forEach((transaction) => {
         const transactionDate = new Date(transaction.date);
         const amount = Number(transaction.amount);
-
-        if (!expenses[transaction.description]) {
-          expenses[transaction.description] = 0;
-        }
-        if (amount < 0) {
-          // Handle expenses (negative amounts)
-          if (!expenses[transaction.description]) {
-            expenses[transaction.description] = 0;
+        if (transactionDate >= startOfMonth && transactionDate <= endOfMonth) {
+          if (amount < 0) {
+            if (!expenses[transaction.description]) {
+              expenses[transaction.description] = 0;
+            }
+            expenses[transaction.description] += amount;
+          } else if (amount > 0) {
+            if (!earnings[transaction.description]) {
+              earnings[transaction.description] = 0;
+            }
+            earnings[transaction.description] += amount;
           }
-          expenses[transaction.description] += amount;
-        } else if (amount > 0) {
-          // Handle earnings (positive amounts)
-          if (!earnings[transaction.description]) {
-            earnings[transaction.description] = 0;
-          }
-          earnings[transaction.description] += amount;
         }
-        //   transactionDate >= startOfMonth && transactionDate <= endOfMonth
-        // );
       });
       res
         .status(200)
-        .json({ message: "Expenditure Summary", data: { expenses, earnings } });
+        .json({
+          message: "Expenditure Summary",
+          data: { duration, expenses, earnings },
+        });
     } else {
       res.status(404).json({ message: "Expenditure Summary Not Found" });
     }

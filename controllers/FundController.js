@@ -2,9 +2,11 @@ const accounts = require("../data/accounts.json");
 const AccountModel = require("../models/accountModel");
 class FundController {
   async checkAccount(req, res) {
-    const recieverAccount = Number(req.query.accountNumber);
-    console.log("REQQQQQ", recieverAccount);
-    const account = await AccountModel.findOne({ session_id: recieverAccount });
+    const recieverName = req.query.accountName;
+    console.log("REQQQQQ", recieverName);
+    const account = await AccountModel.findOne({
+      account_holder_name: { $regex: new RegExp(`${recieverName}`, "i") },
+    });
     if (account) {
       res.status(200).json({ message: "Account Data Fetched", data: account });
     } else {
