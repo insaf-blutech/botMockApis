@@ -86,8 +86,70 @@ class AccountController {
       res.status(404).json({ message: "Transactions Not Found" });
     }
   }
+  // async expenditureSummary(req, res) {
+  //   const now = new Date();
+  //   // const {from, to} = req.query;
+  //   const fr = new Date("2024-05-01");
+  //   const to = new Date("2024-05-30");
+  //   const fromDate = new Date(fr.getFullYear(), now.getMonth(), 1);
+  //   const toDate = new Date(to.getFullYear(), now.getMonth(), 1);
+
+  //   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  //   const endOfMonth = new Date(
+  //     now.getFullYear(),
+  //     now.getMonth() + 1,
+  //     0,
+  //     23,
+  //     59,
+  //     59,
+  //     999
+  //   );
+  //   const duration = `${startOfMonth.toLocaleDateString()} to ${endOfMonth.toLocaleDateString()}`;
+  //   console.log("REQQQQQ", startOfMonth, endOfMonth, "\n", fromDate, toDate);
+  //   const accountNumber = Number(req.query.accountNumber);
+  //   if (isNaN(accountNumber) || !accountNumber) {
+  //     return res.status(400).json({ message: "Invalid account number" });
+  //   }
+  //   const account = await TransactionModel.findOne({
+  //     session_id: accountNumber,
+  //   });
+  //   let expenses = {};
+  //   let earnings = {};
+  //   if (account) {
+  //     account.transactions.forEach((transaction) => {
+  //       const transactionDate = new Date(transaction.date);
+  //       const amount = Number(transaction.amount);
+  //       if (transactionDate >= startOfMonth && transactionDate <= endOfMonth) {
+  //         if (amount < 0) {
+  //           if (!expenses[transaction.description]) {
+  //             expenses[transaction.description] = 0;
+  //           }
+  //           expenses[transaction.description] += amount;
+  //         } else if (amount > 0) {
+  //           if (!earnings[transaction.description]) {
+  //             earnings[transaction.description] = 0;
+  //           }
+  //           earnings[transaction.description] += amount;
+  //         }
+  //       }
+  //     });
+  //     res.status(200).json({
+  //       message: "Expenditure Summary",
+  //       data: { duration, expenses, earnings },
+  //     });
+  //   } else {
+  //     res.status(404).json({ message: "Expenditure Summary Not Found" });
+  //   }
+  // }
   async expenditureSummary(req, res) {
     const now = new Date();
+    // const fr = req.query.from
+    //   ? new Date(req.query.from)
+    //   : new Date("2024-05-14");
+    // const to = req.query.to ? new Date(req.query.to) : new Date("2024-07-01");
+    const fr = req.query.from ? new Date(req.query.from) : "";
+    const to = req.query.to ? new Date(req.query.to) : "";
+
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(
       now.getFullYear(),
@@ -98,19 +160,31 @@ class AccountController {
       59,
       999
     );
-    const duration = `${startOfMonth.toLocaleDateString()} to ${endOfMonth.toLocaleDateString()}`;
-    console.log("REQQQQQ", startOfMonth, endOfMonth, "\n", duration);
+
+    // Determine the date range
+    const fromDate = fr || startOfMonth;
+    const toDate = to || endOfMonth;
+
+    const duration = `${fromDate.toLocaleDateString()} to ${toDate.toLocaleDateString()}`;
+    console.log("REQQQQQ", fromDate, toDate, "\n", duration);
+
     const accountNumber = Number(req.query.accountNumber);
+    if (isNaN(accountNumber)) {
+      return res.status(400).json({ message: "Invalid account number" });
+    }
+
     const account = await TransactionModel.findOne({
       session_id: accountNumber,
     });
     let expenses = {};
     let earnings = {};
+
     if (account) {
       account.transactions.forEach((transaction) => {
         const transactionDate = new Date(transaction.date);
         const amount = Number(transaction.amount);
-        if (transactionDate >= startOfMonth && transactionDate <= endOfMonth) {
+
+        if (transactionDate >= fromDate && transactionDate <= toDate) {
           if (amount < 0) {
             if (!expenses[transaction.description]) {
               expenses[transaction.description] = 0;
@@ -124,12 +198,11 @@ class AccountController {
           }
         }
       });
-      res
-        .status(200)
-        .json({
-          message: "Expenditure Summary",
-          data: { duration, expenses, earnings },
-        });
+
+      res.status(200).json({
+        message: "Expenditure Summary",
+        data: { duration, expenses, earnings },
+      });
     } else {
       res.status(404).json({ message: "Expenditure Summary Not Found" });
     }
