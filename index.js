@@ -24,7 +24,3 @@ app.use("/api/general", generalRoutes);
 app.use("/api/account", accountRoutes);
 app.use("/api/balance", balanceRoutes);
 app.use("/api/fund", fundRoutes);
-
-app.listen(8000, () => {
-  console.log("Server is live at 8000.....");
-});
