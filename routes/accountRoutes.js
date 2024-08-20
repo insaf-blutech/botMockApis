@@ -3,6 +3,7 @@ const AccountController = require("../controllers/AccountController");
 
 const router = express.Router();
 
+router.post("/addPayeeAccount", AccountController.AddPayeeAccount);
 router.get("/checkBalance", AccountController.checkBalance);
 router.get("/checkRewardPoints", AccountController.checkRewardPoints);
 router.get("/transactions/number", AccountController.transactionsByNumber);

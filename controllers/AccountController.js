@@ -5,6 +5,30 @@ const BranchModel = require("../models/branchModel");
 const TransactionModel = require("../models/transactionModel");
 
 class AccountController {
+  async AddPayeeAccount(req, res) {
+    const { session_id, account_holder_name, bankName } = req.body;
+    try {
+      if (!session_id || !account_holder_name || !bankName) {
+        throw new Error("All fields Required!!!");
+      }
+      const accountNumber = Number(req.query.accountNumber);
+      console.log("REQQQQQ", accountNumber);
+      const accountFound = await AccountModel.findOne({
+        session_id: session_id,
+      });
+      if (accountFound) {
+        throw new Error("Payee Already Added");
+      }
+      const account = await AccountModel.create({ ...req.body });
+      if (account) {
+        res.status(200).json({ message: "New Payee Added", data: account });
+      } else {
+        throw new Error("Error Adding Payee");
+      }
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  }
   async checkBalance(req, res) {
     const accountNumber = Number(req.query.accountNumber);
     console.log("REQQQQQ", accountNumber);
