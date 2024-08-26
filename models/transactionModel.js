@@ -1,15 +1,51 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const TransactionSchema = new Schema(
-  {
-    session_id: { type: Number, required: true },
-    account_holder_name: { type: String, required: true },
-    transactions: { type: Array, required: true },
+const transactionSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "Account",
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
-const TransactionModel = mongoose.model("Transaction", TransactionSchema);
-module.exports = TransactionModel;
+  transactionType: {
+    type: String,
+    enum: ["Bill Payment", "Fund Transfer", "Withdrawal", "Deposit"],
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  status: {
+    type: String,
+    enum: ["Pending", "Completed", "Failed"],
+    default: "Pending",
+  },
+  sourceAccount: {
+    type: String,
+    required: true,
+  },
+  destinationAccount: {
+    type: String,
+  },
+  bill: {
+    type: Schema.Types.ObjectId,
+    ref: "Bill",
+  },
+  description: {
+    type: String,
+  },
+  referenceId: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+});
+
+const Transaction = mongoose.model("Transaction", transactionSchema);
+
+module.exports = Transaction;

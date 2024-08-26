@@ -4,7 +4,7 @@ class FundController {
   async checkAccount(req, res) {
     const recieverName = req.query.accountName;
     console.log("REQQQQQ", recieverName);
-    const account = await AccountModel.findOne({
+    const account = await AccountModel.find({
       account_holder_name: { $regex: new RegExp(`${recieverName}`, "i") },
     });
     if (account) {
