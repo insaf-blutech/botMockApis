@@ -49,14 +49,11 @@ class FundController {
 
       if (sender && receiver) {
         if (otp === 1234) {
-          // sender.balance = sender.balance - sendingAmount;
-          // reciever.balance = reciever.balance + sendingAmount;
-
           sender.balance -= sendingAmount;
           receiver.balance += sendingAmount;
 
-          parseFloat(sender.balance).toFixed(2);
-          parseFloat(receiver.balance).toFixed(2);
+          sender.balance = parseFloat(sender.balance).toFixed(2);
+          receiver.balance = parseFloat(receiver.balance).toFixed(2);
 
           await sender.save({ session });
           await receiver.save({ session });
