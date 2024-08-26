@@ -51,7 +51,7 @@ class FundController {
         if (otp === 1234) {
           sender.balance -= sendingAmount;
           receiver.balance += sendingAmount;
-
+          console.log(sender, "\n", receiver);
           sender.balance = parseFloat(sender.balance).toFixed(2);
           receiver.balance = parseFloat(receiver.balance).toFixed(2);
 
