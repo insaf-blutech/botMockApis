@@ -5,7 +5,7 @@ class FundController {
     const recieverName = req.query.accountName;
     console.log("REQQQQQ", recieverName);
     const account = await AccountModel.find({
-      account_holder_name: { $regex: new RegExp(`${recieverName}`, "i") },
+      payeeName: { $regex: new RegExp(`${recieverName}`, "i") },
     });
     if (account && account.length > 0) {
       res.status(200).json({ message: "Account Data Fetched", data: account });
