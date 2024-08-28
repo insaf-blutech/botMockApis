@@ -45,6 +45,9 @@ const transactionSchema = new Schema({
     unique: true,
     required: true,
   },
+  type: {
+    type: String,
+  },
   transactions: {
     type: [Object],
     required: false,

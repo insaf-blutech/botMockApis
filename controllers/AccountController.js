@@ -141,8 +141,8 @@ class AccountController {
     const account = await TransactionModel.findOne({
       session_id: accountNumber,
     });
-    let expenses = {};
-    let earnings = {};
+    let expenses = [];
+    let earnings = [];
 
     if (account) {
       account.transactions.forEach((transaction) => {
@@ -150,17 +150,21 @@ class AccountController {
         const amount = Number(transaction.amount);
 
         if (transactionDate >= fromDate && transactionDate <= toDate) {
-          if (amount < 0) {
-            if (!expenses[transaction.description]) {
-              expenses[transaction.description] = 0;
-            }
-            expenses[transaction.description] += amount;
-          } else if (amount > 0) {
-            if (!earnings[transaction.description]) {
-              earnings[transaction.description] = 0;
-            }
-            earnings[transaction.description] += amount;
+          if (transaction.type == "expense") {
+            // if (!expenses[transaction.description]) {
+            //   expenses[transaction.description] = 0;
+            // }
+            // expenses[transaction.description] += amount;
+            expenses.push(transaction);
+          } else {
+            earnings.push(transaction);
           }
+          // else if (amount > 0) {
+          //   if (!earnings[transaction.description]) {
+          //     earnings[transaction.description] = 0;
+          //   }
+          //   earnings[transaction.description] += amount;
+          // }
         }
       });
 
