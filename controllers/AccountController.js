@@ -8,7 +8,7 @@ class AccountController {
   async AddPayeeAccount(req, res) {
     const { session_id, account_holder_name, bankName, payeeName } = req.body;
     try {
-      if (!session_id || !account_holder_name || !bankName || payeeName) {
+      if (!session_id || !account_holder_name || !bankName || !payeeName) {
         throw new Error("All fields Required!!!");
       }
       const accountNumber = Number(req.query.accountNumber);
