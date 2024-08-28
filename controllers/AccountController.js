@@ -59,13 +59,13 @@ class AccountController {
     const accountNumber = Number(req.query.accountNumber);
     const numOfTransactions = Number(req.query.numOfTransactions) || 5;
 
-    console.log("REQQQQQ", req.query);
     const account = await TransactionModel.findOne({
       session_id: accountNumber,
     });
     if (account) {
       let filteredTransactions = account.transactions;
 
+      console.log("REQQQQQ", filteredTransactions, "\n", account);
       const sortedTransactions = filteredTransactions.sort(
         (a, b) => new Date(b.date) - new Date(a.date)
       );

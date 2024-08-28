@@ -12,6 +12,7 @@ const transactionSchema = new Schema({
     enum: ["Bill Payment", "Fund Transfer", "Withdrawal", "Deposit"],
     required: true,
   },
+
   amount: {
     type: Number,
     required: true,
@@ -43,6 +44,10 @@ const transactionSchema = new Schema({
     type: String,
     unique: true,
     required: true,
+  },
+  transactions: {
+    type: [Object],
+    required: false,
   },
 });
 
