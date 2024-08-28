@@ -7,7 +7,7 @@ class FundController {
     const account = await AccountModel.find({
       account_holder_name: { $regex: new RegExp(`${recieverName}`, "i") },
     });
-    if (account) {
+    if (account && account.length > 0) {
       res.status(200).json({ message: "Account Data Fetched", data: account });
     } else {
       res.status(404).json({ message: "Account Not Found" });
