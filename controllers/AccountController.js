@@ -151,20 +151,111 @@ class AccountController {
 
         if (transactionDate >= fromDate && transactionDate <= toDate) {
           if (transaction.type == "expense") {
-            // if (!expenses[transaction.description]) {
-            //   expenses[transaction.description] = 0;
-            // }
-            // expenses[transaction.description] += amount;
             expenses.push(transaction);
           } else {
             earnings.push(transaction);
           }
-          // else if (amount > 0) {
-          //   if (!earnings[transaction.description]) {
-          //     earnings[transaction.description] = 0;
-          //   }
-          //   earnings[transaction.description] += amount;
-          // }
+        }
+      });
+
+      res.status(200).json({
+        message: "Expenditure Summary",
+        data: { duration, expenses, earnings },
+      });
+    } else {
+      res.status(404).json({ message: "Expenditure Summary Not Found" });
+    }
+  }
+  async expenditureSummaryByCategory(req, res) {
+    const now = new Date();
+    const fr = req.query.from ? new Date(req.query.from) : "";
+    const to = req.query.to ? new Date(req.query.to) : "";
+    const { category } = req.query;
+    console.log("QQQQQQQQQQ : ", req.query.category);
+
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
+
+    // Determine the date range
+    const fromDate = fr || startOfMonth;
+    const toDate = to || endOfMonth;
+
+    const duration = `${fromDate.toLocaleDateString()} to ${toDate.toLocaleDateString()}`;
+    console.log("REQQQQQ", fromDate, toDate, "\n", duration);
+
+    const accountNumber = Number(req.query.accountNumber);
+    if (isNaN(accountNumber)) {
+      return res.status(400).json({ message: "Invalid account number" });
+    }
+    let expenses = [];
+    let earnings = [];
+    const regex = new RegExp(category, "i");
+
+    const account = await TransactionModel.aggregate([
+      {
+        $match: {
+          session_id: accountNumber,
+        },
+      },
+      {
+        $project: {
+          _id: 1, // Include `_id` field
+          session_id: 1, // Include `session_id` field
+          account_holder_name: 1, // Include `account_holder_name` field
+          id: 1, // Include `id` field
+          transactions: {
+            $filter: {
+              input: "$transactions",
+              as: "transaction",
+              cond: {
+                $or: [
+                  {
+                    $regexMatch: {
+                      input: "$$transaction.mainCategory",
+                      regex: regex,
+                    },
+                  },
+                  {
+                    $regexMatch: {
+                      input: "$$transaction.subCategory",
+                      regex: regex,
+                    },
+                  },
+                  {
+                    $regexMatch: {
+                      input: "$$transaction.description",
+                      regex: regex,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    console.log("AAAAAAAAAA : ", JSON.stringify(account));
+
+    if (account) {
+      account[0].transactions.forEach((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        const amount = Number(transaction.amount);
+
+        if (transactionDate >= fromDate && transactionDate <= toDate) {
+          if (transaction.type == "expense") {
+            expenses.push(transaction);
+          } else {
+            earnings.push(transaction);
+          }
         }
       });
 
