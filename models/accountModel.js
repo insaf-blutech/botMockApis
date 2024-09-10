@@ -9,6 +9,7 @@ const AccountSchema = new Schema(
     payeeName: { type: String, required: true },
     balance: { type: Number, required: true, default: 45000 },
     currency: { type: String, required: true, default: "Pkr" },
+    cards: { type: [Object], required: true },
   },
   {
     timestamps: true,

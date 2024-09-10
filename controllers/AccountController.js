@@ -243,8 +243,6 @@ class AccountController {
       },
     ]);
 
-    console.log("AAAAAAAAAA : ", JSON.stringify(account));
-
     if (account) {
       account[0].transactions.forEach((transaction) => {
         const transactionDate = new Date(transaction.date);
