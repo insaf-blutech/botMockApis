@@ -17,10 +17,10 @@ class GeneralController {
     let filter = {};
 
     if (type) {
-      filter.type = type;
+      filter.type = { $regex: new RegExp(type, "i") };
     }
     if (city) {
-      filter.city = type;
+      filter.city = { $regex: new RegExp(city, "i") };
     }
     try {
       const accountNumber = Number(req.query?.accountNumber);
@@ -29,11 +29,9 @@ class GeneralController {
         throw new Error("Incorrect Account Number");
       }
       const discounts = await DiscountModel.find({
-        // city,
         ...filter,
         cardType: account.cards[0].cardType,
         cardCategory: account.cards[0].cardCategory,
-        // type,
       });
       console.log("CArdssssssss : ", city);
       if (discounts) {
