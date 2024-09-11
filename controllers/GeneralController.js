@@ -13,11 +13,11 @@ class GeneralController {
     }
   }
   async getCardDiscounts(req, res) {
-    const { city, type } = req.query;
+    const { city, itemType } = req.query;
     let filter = {};
 
-    if (type) {
-      filter.type = { $regex: new RegExp(type, "i") };
+    if (itemType) {
+      filter.type = { $regex: new RegExp(itemType, "i") };
     }
     if (city) {
       filter.city = { $regex: new RegExp(city, "i") };
