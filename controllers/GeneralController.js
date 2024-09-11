@@ -26,12 +26,16 @@ class GeneralController {
       const accountNumber = Number(req.query?.accountNumber);
       const account = await AccountModel.findOne({ session_id: accountNumber });
       if (!account.cards) {
-        throw new Error("Incorrect Account Number");
+        throw new Error("No Discounts Applicable for this Account");
       }
+      const cardTypes = account?.cards.map((cr) => cr.cardType);
+      const cardCategories = account?.cards.map((cr) => cr.cardCategory);
       const discounts = await DiscountModel.find({
         ...filter,
-        cardType: account.cards[0].cardType,
-        cardCategory: account.cards[0].cardCategory,
+        cardType: { $in: cardTypes },
+        cardCategory: { $in: cardCategories },
+        // cardType: account.cards[0].cardType,
+        // cardCategory: account.cards[0].cardCategory,
       });
       console.log("CArdssssssss : ", city);
       if (discounts) {
