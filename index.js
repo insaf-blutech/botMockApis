@@ -28,4 +28,3 @@ app.use("/api/fund", fundRoutes);
 app.listen(8000, () => {
   console.log("Server is live at 8000.....");
 });
-module.exports.handler = serverless(app);
