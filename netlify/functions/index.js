@@ -1,14 +1,15 @@
 const express = require("express");
 const fs = require("fs");
+const serverless = require("serverless-http");
 const app = express();
 const path = require("path");
 const cors = require("cors");
 
-const balanceRoutes = require("./routes/balanceRoutes");
-const accountRoutes = require("./routes/accountRoutes");
-const generalRoutes = require("./routes/generalRoutes");
-const fundRoutes = require("./routes/fundRoutes");
-const dbConnection = require("./config/db-config");
+const balanceRoutes = require("../../routes/balanceRoutes");
+const accountRoutes = require("../../routes/accountRoutes");
+const generalRoutes = require("../../routes/generalRoutes");
+const fundRoutes = require("../../routes/fundRoutes");
+const dbConnection = require("../../config/db-config");
 
 app.use(express.json());
 app.use(cors());
@@ -25,6 +26,7 @@ app.use("/api/account", accountRoutes);
 app.use("/api/balance", balanceRoutes);
 app.use("/api/fund", fundRoutes);
 
-app.listen(8000, () => {
-  console.log("Server is live at 8000.....");
-});
+// app.listen(8000, () => {
+//   console.log("Server is live at 8000.....");
+// });
+module.exports.handler = serverless(app);
