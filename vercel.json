@@ -3,14 +3,14 @@
     "name": "native-server",
     "builds": [
         {
-            "src": "netlify/functions/index.js",
+            "src": "index.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "netlify/functions/index.js"
+            "dest": "/index.js"
         }
     ]
 }
