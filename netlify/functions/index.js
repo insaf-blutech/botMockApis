@@ -18,7 +18,7 @@ dbConnection();
 
 app.get("/", (req, res) => {
   console.log("GET REQUEST : ", req.body);
-  res.send("<h1>Hello</h1>");
+  res.send("<h1>Hello From Serverless</h1>");
 });
 
 app.use("/api/general", generalRoutes);
