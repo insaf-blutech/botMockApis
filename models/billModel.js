@@ -45,5 +45,5 @@ const BillSchema = new mongoose.Schema({
   },
 });
 
-const Bill = mongoose.model("Bill", BillSchema);
-module.exports = Bill;
+const BillModel = mongoose.model("Bill", BillSchema);
+module.exports = BillModel;
