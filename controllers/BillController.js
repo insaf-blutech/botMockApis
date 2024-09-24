@@ -6,7 +6,7 @@ class BillController {
   async PayBill(req, res) {
     const { category, subCategory, accountNumber, billId, billName } = req.body;
     try {
-      if (!category || !subCategory || !accountNumber || !billName) {
+      if (!category || !accountNumber || !billName) {
         throw new Error("All fields Required!!!");
       }
 
