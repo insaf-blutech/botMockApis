@@ -20,43 +20,63 @@ class BillController {
       // If account found then pay the bill from user account
       // else response with No Bill Found
       if (!billFound) {
-        return res
-          .status(404)
-          .json({ message: "Bill Not Found in Saved Bills. Add a Bill" });
+        return res.status(404).json({
+          message: "Bill Not Found in Saved Bills. Add a Bill",
+          type: "BillNotSaved",
+        });
       }
       const currMonth = new Date().getMonth();
       const currYear = new Date().getFullYear();
-      const bill = await BillModel.find({
+      const bills = await BillModel.find({
         accountNumber: billFound.billId,
         // month: currMonth + 1,
-        // year: currYear,
+        year: { $lte: currYear },
         isPaid: false,
       });
       // Doing Transaction
       // For time being lets pay current month bill
-      if (bill.length > 0) {
+      if (bills && bills.length > 0) {
+        let totalAmount;
+        bills.map((bill) => {
+          let amountWithPenalty = bill.amount;
+
+          if (Date.now() > bill.dueDate) {
+            amountWithPenalty += bill.amount * 10;
+          }
+          totalAmount += amountWithPenalty;
+        });
+
         const session = await AccountModel.startSession();
         session.startTransaction();
         const user = await AccountModel.findOne({
           session_id: accountNumber,
         }).session(session);
-        if (user.balance > bill[0].amount) {
-          user.balance -= bill[0].amount;
+        if (user.balance > totalAmount) {
+          user.balance -= totalAmount;
           user.balance = parseFloat(user.balance).toFixed(2);
           await user.save({ session });
+
+          for (let bill of bills) {
+            bill.isPaid = true;
+            await bill.save({ session });
+          }
           await session.commitTransaction();
           session.endSession();
-
-          bill.isPaid = true;
-          await bill.save();
-          res
-            .status(200)
-            .json({ message: "Bill Payed Successfully", data: bill });
+          res.status(200).json({
+            message: "Bill Payed Successfully",
+            totalPaid: totalAmount,
+            data: bills,
+          });
         } else {
-          return res
-            .status(400)
-            .json({ message: "Insufficient Amount to Pay the Bill" });
+          return res.status(400).json({
+            message: "Insufficient Amount to Pay the Bills",
+            type: "InsufficientBalance",
+          });
         }
+      } else {
+        return res
+          .status(400)
+          .json({ message: "Bill Already Paid", type: "BillCleared" });
       }
     } catch (err) {
       res.status(400).json({ message: err.message });
