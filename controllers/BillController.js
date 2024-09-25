@@ -13,7 +13,7 @@ class BillController {
       console.log("REQQQQQ", accountNumber);
       const billFound = await SavedBill.findOne({
         accountNumber: accountNumber,
-        category: category,
+        category: { $regex: new RegExp(category, "i") },
         billName: { $regex: new RegExp(billName, "i") },
       });
 
@@ -33,10 +33,11 @@ class BillController {
         year: { $lte: currYear },
         isPaid: false,
       });
+      console.log("BILLS : \n\n", bills);
       // Doing Transaction
       // For time being lets pay current month bill
       if (bills && bills.length > 0) {
-        let totalAmount;
+        let totalAmount = 0;
         bills.map((bill) => {
           let amountWithPenalty = bill.amount;
 
@@ -51,14 +52,19 @@ class BillController {
         const user = await AccountModel.findOne({
           session_id: accountNumber,
         }).session(session);
-        if (user.balance > totalAmount) {
+        if (user.balance >= totalAmount) {
           user.balance -= totalAmount;
           user.balance = parseFloat(user.balance).toFixed(2);
           await user.save({ session });
 
-          for (let bill of bills) {
-            bill.isPaid = true;
-            await bill.save({ session });
+          for (let bl of bills) {
+            bl.isPaid = true;
+            // await bl.save({ session });
+            await BillModel.updateOne(
+              { _id: bl._id },
+              { isPaid: true },
+              session
+            );
           }
           await session.commitTransaction();
           session.endSession();
