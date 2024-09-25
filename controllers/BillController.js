@@ -95,13 +95,14 @@ class BillController {
         throw new Error("All fields Required!!!");
       }
 
-      console.log("REQQQQQ", accountNumber);
       const billFound = await SavedBill.findOne({
-        billName: { $regex: new RegExp(billName, "i") },
-        // billName: billName,
-        accountNumber: accountNumber,
         billId: billId,
+        $or: [{ billName: { $regex: new RegExp(`^${billName}$`, "i") } }],
+
+        // billName: { $regex: new RegExp(`^${billName}$`, "i") },
+        // billName,
       });
+      console.log("REQQQQQ", billFound);
       if (billFound) {
         throw new Error("Bill Already Added");
       }

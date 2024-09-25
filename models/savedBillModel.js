@@ -13,7 +13,7 @@ const savedBillSchema = new Schema(
     },
     billId: {
       type: String,
-      ref: "Bill",
+      // ref: "Bill",
       required: true,
     },
     category: {
