@@ -55,28 +55,106 @@ class AccountController {
       res.status(404).json({ message: "Account Not Found" });
     }
   }
+  // async transactionsByNumber(req, res) {
+  //   const accountNumber = Number(req.query.accountNumber);
+  //   const numOfTransactions = Number(req.query.numOfTransactions) || 5;
+
+  //   const account = await TransactionModel.findOne({
+  //     session_id: accountNumber,
+  //   });
+  //   if (account) {
+  //     let filteredTransactions = account.transactions;
+
+  //     console.log("REQQQQQ", filteredTransactions, "\n", account);
+  //     const sortedTransactions = filteredTransactions.sort(
+  //       (a, b) => new Date(b.date) - new Date(a.date)
+  //     );
+
+  //     const lastTransactions = sortedTransactions.slice(0, numOfTransactions);
+
+  //     res
+  //       .status(200)
+  //       .json({ message: "Transactions Data Fetched", data: lastTransactions });
+  //   } else {
+  //     res.status(404).json({ message: "Transactions Not Found" });
+  //   }
+  // }
   async transactionsByNumber(req, res) {
     const accountNumber = Number(req.query.accountNumber);
     const numOfTransactions = Number(req.query.numOfTransactions) || 5;
-
-    const account = await TransactionModel.findOne({
-      session_id: accountNumber,
-    });
-    if (account) {
-      let filteredTransactions = account.transactions;
-
-      console.log("REQQQQQ", filteredTransactions, "\n", account);
-      const sortedTransactions = filteredTransactions.sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-      );
-
-      const lastTransactions = sortedTransactions.slice(0, numOfTransactions);
-
-      res
-        .status(200)
-        .json({ message: "Transactions Data Fetched", data: lastTransactions });
-    } else {
-      res.status(404).json({ message: "Transactions Not Found" });
+    const { category } = req.query;
+    const regex = new RegExp(category, "i");
+    try {
+      const account = await TransactionModel.aggregate([
+        {
+          $match: {
+            session_id: accountNumber,
+          },
+        },
+        {
+          $project: {
+            _id: 1, // Include `_id` field
+            session_id: 1, // Include `session_id` field
+            account_holder_name: 1, // Include `account_holder_name` field
+            id: 1, // Include `id` field
+            transactions: {
+              $filter: {
+                input: "$transactions",
+                as: "transaction",
+                cond: {
+                  $or: [
+                    {
+                      $regexMatch: {
+                        input: "$$transaction.mainCategory",
+                        regex: regex,
+                      },
+                    },
+                    {
+                      $regexMatch: {
+                        input: "$$transaction.subCategory",
+                        regex: regex,
+                      },
+                    },
+                    {
+                      $regexMatch: {
+                        input: "$$transaction.description",
+                        regex: regex,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            session_id: 1,
+            account_holder_name: 1,
+            id: 1,
+            // Limit the number of transactions returned
+            transactions:
+              numOfTransactions === Number.MAX_SAFE_INTEGER
+                ? { $reverseArray: "$transactions" } // Return all transactions reversed
+                : {
+                    $slice: [
+                      { $reverseArray: "$transactions" },
+                      numOfTransactions,
+                    ],
+                  },
+          },
+        },
+      ]);
+      if (!account[0] || account[0].transactions.length == 0) {
+        throw new Error("Transactions Not Found!!!");
+      }
+      res.status(200).json({
+        message: "Transactions Data Fetched",
+        data: account[0].transactions,
+      });
+    } catch (err) {
+      res.status(400).json({ message: err.message });
     }
   }
   async transactionsByDate(req, res) {
