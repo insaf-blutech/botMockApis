@@ -326,13 +326,13 @@ class AccountController {
         const transactionDate = new Date(transaction.date);
         const amount = Number(transaction.amount);
 
-        if (transactionDate >= fromDate && transactionDate <= toDate) {
-          if (transaction.type == "expense") {
-            expenses.push(transaction);
-          } else {
-            earnings.push(transaction);
-          }
+        // if (transactionDate >= fromDate && transactionDate <= toDate) {
+        if (transaction.type == "expense") {
+          expenses.push(transaction);
+        } else {
+          earnings.push(transaction);
         }
+        // }
       });
 
       res.status(200).json({
