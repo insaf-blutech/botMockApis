@@ -10,6 +10,7 @@ const generalRoutes = require("./routes/generalRoutes");
 const fundRoutes = require("./routes/fundRoutes");
 const billRoutes = require("./routes/billRoutes");
 const dbConnection = require("./config/db-config");
+const UrlModel = require("./models/urlModel");
 
 app.use(express.json());
 app.use(cors());
