@@ -164,6 +164,7 @@ class AccountController {
     const account = await TransactionModel.findOne({
       session_id: accountNumber,
     });
+    console.log("ACCOUNTSSSSSSSSSSSSs : ", account, account?.transactions);
     if (account) {
       let filteredTransactions = account.transactions;
 
@@ -182,7 +183,6 @@ class AccountController {
 
       res.status(200).json({
         message: "Transactions Data Fetched",
-        data: sortedTransactions,
         duration: {
           from:
             new Date(from).toLocaleDateString() ||
@@ -191,6 +191,7 @@ class AccountController {
             new Date(to).toLocaleDateString() ||
             new Date().toLocaleDateString(),
         },
+        data: sortedTransactions,
       });
     } else {
       res.status(404).json({ message: "Transactions Not Found" });
