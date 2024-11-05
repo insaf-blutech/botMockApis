@@ -1,58 +1,68 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const transactionSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "Account",
-    required: true,
+// Define the transaction schema
+const transactionSchema = new Schema(
+  {
+    fromAccount: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Account",
+      required: true,
+    },
+    toAccount: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Account",
+      required: true,
+    },
+    mainCategory: {
+      type: String,
+      enum: ["Fund Transfer", "Bill Payment"], // Added Expense and Income
+      required: true,
+    },
+    subCategory: {
+      type: String,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    billDetails: {
+      billerName: {
+        type: String,
+        required: function () {
+          return this.transactionType === "Bill Payment";
+        },
+      },
+      billerCategory: {
+        type: String, // e.g., Electricity, Water, Internet
+        required: function () {
+          return this.transactionType === "Bill Payment";
+        },
+      },
+      billerSubCategory: {
+        type: String, // e.g., Electricity, Water, Internet
+        required: function () {
+          return this.transactionType === "Bill Payment";
+        },
+      },
+      billId: {
+        type: Number, // e.g., Electricity, Water, Internet
+        required: function () {
+          return this.transactionType === "Bill Payment";
+        },
+      },
+    },
+    type: {
+      type: String,
+      enum: ["income", "expense"],
+      required: true,
+    },
   },
-  transactionType: {
-    type: String,
-    enum: ["Bill Payment", "Fund Transfer", "Withdrawal", "Deposit"],
-    required: true,
-  },
-
-  amount: {
-    type: Number,
-    required: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-  status: {
-    type: String,
-    enum: ["Pending", "Completed", "Failed"],
-    default: "Pending",
-  },
-  sourceAccount: {
-    type: String,
-    required: true,
-  },
-  destinationAccount: {
-    type: String,
-  },
-  bill: {
-    type: Schema.Types.ObjectId,
-    ref: "Bill",
-  },
-  description: {
-    type: String,
-  },
-  referenceId: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  type: {
-    type: String,
-  },
-  transactions: {
-    type: [Object],
-    required: false,
-  },
-});
+  {
+    timestamps: true, // Automatically adds createdAt and updatedAt fields
+  }
+);
 
 const Transaction = mongoose.model("Transaction", transactionSchema);
 

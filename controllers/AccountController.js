@@ -183,6 +183,14 @@ class AccountController {
       res.status(200).json({
         message: "Transactions Data Fetched",
         data: sortedTransactions,
+        duration: {
+          from:
+            new Date(from).toLocaleDateString() ||
+            new Date().toLocaleDateString(),
+          to:
+            new Date(to).toLocaleDateString() ||
+            new Date().toLocaleDateString(),
+        },
       });
     } else {
       res.status(404).json({ message: "Transactions Not Found" });
