@@ -3,9 +3,11 @@ const AccountModel = require("../models/accountModel");
 class FundController {
   async checkAccount(req, res) {
     const recieverName = req.query.accountName;
+    const accountNumber = req.query.accountNumber;
     console.log("REQQQQQ", recieverName);
     const account = await AccountModel.find({
       payeeName: { $regex: new RegExp(`${recieverName}`, "i") },
+      session_id: { $ne: accountNumber },
     });
     if (account && account.length > 0) {
       res.status(200).json({ message: "Account Data Fetched", data: account });
