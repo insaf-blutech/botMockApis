@@ -64,7 +64,7 @@ class FundController {
           session.endSession();
           res.status(200).json({
             message: "Amount Transferred Successfully",
-            data: { sender, receiver },
+            data: { sender, receiver, sendingAmount },
           });
         } else {
           throw new Error("Invalid OTP");
